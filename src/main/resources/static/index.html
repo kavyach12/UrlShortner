@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%234f46e5'/%3E%3Cpath d='M22 32h20M32 22l10 10-10 10' stroke='white' stroke-width='5' stroke-linecap='round' stroke-linejoin='round' fill='none'/%3E%3C/svg%3E">
+    <title>URL Shortener</title>
+    <style>
+        * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+        }
+
+        body {
+          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+          min-height: 100vh;
+          background: linear-gradient(to bottom right, #eff6ff, #e0e7ff);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 1rem;
+        }
+
+        .container {
+          width: 100%;
+          max-width: 42rem;
+        }
+
+        .card {
+          background: white;
+          border-radius: 1rem;
+          box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+          padding: 2rem;
+        }
+
+        .header {
+          text-align: center;
+          margin-bottom: 2rem;
+        }
+
+        .icon-wrapper {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          width: 4rem;
+          height: 4rem;
+          background: #e0e7ff;
+          border-radius: 50%;
+          margin-bottom: 1rem;
+        }
+
+        .icon {
+          width: 2rem;
+          height: 2rem;
+          color: #4f46e5;
+        }
+
+        h1 {
+          font-size: 1.875rem;
+          margin-bottom: 0.5rem;
+          color: #111827;
+        }
+
+        .subtitle {
+          color: #6b7280;
+        }
+
+        .input-section {
+          margin-bottom: 2rem;
+        }
+
+        .url-input {
+          width: 100%;
+          padding: 0.75rem 1rem;
+          border: 1px solid #d1d5db;
+          border-radius: 0.5rem;
+          font-size: 1rem;
+          margin-bottom: 1rem;
+          outline: none;
+          transition: all 0.2s;
+        }
+
+        .url-input:focus {
+          border-color: #4f46e5;
+          box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        .shorten-btn {
+          width: 100%;
+          padding: 0.75rem;
+          background: #4f46e5;
+          color: white;
+          border: none;
+          border-radius: 0.5rem;
+          font-size: 1rem;
+          cursor: pointer;
+          transition: background 0.2s;
+        }
+
+        .shorten-btn:hover:not(:disabled) {
+          background: #4338ca;
+        }
+
+        .shorten-btn:disabled {
+          background: #d1d5db;
+          cursor: not-allowed;
+        }
+
+        .results-section {
+          margin-top: 2rem;
+        }
+
+        .results-title {
+          font-size: 1.125rem;
+          color: #374151;
+          margin-bottom: 1rem;
+        }
+
+        .url-card {
+          background: #f9fafb;
+          border: 1px solid #e5e7eb;
+          border-radius: 0.5rem;
+          padding: 1rem;
+          margin-bottom: 1rem;
+        }
+
+        .url-section {
+          margin-bottom: 0.75rem;
+        }
+
+        .url-label {
+          font-size: 0.75rem;
+          color: #6b7280;
+          margin-bottom: 0.25rem;
+        }
+
+        .url-text {
+          font-size: 0.875rem;
+          color: #374151;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+
+        .short-url-section {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 1rem;
+          margin-bottom: 0.75rem;
+        }
+
+        .short-url-wrapper {
+          flex: 1;
+        }
+
+        .short-url-link {
+          color: #4f46e5;
+          font-weight: 500;
+          cursor: pointer;
+          text-decoration: none;
+          display: block;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+
+        .short-url-link:hover {
+          color: #4338ca;
+        }
+
+        .copy-btn {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          padding: 0.5rem 1rem;
+          background: white;
+          border: 1px solid #d1d5db;
+          border-radius: 0.5rem;
+          cursor: pointer;
+          transition: background 0.2s;
+          font-size: 0.875rem;
+        }
+
+        .copy-btn:hover {
+          background: #f9fafb;
+        }
+
+        .copy-icon {
+          width: 1rem;
+          height: 1rem;
+        }
+
+        .copied {
+          color: #16a34a;
+        }
+
+        .clicks-section {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          padding-top: 0.5rem;
+          border-top: 1px solid #e5e7eb;
+        }
+
+        .status-dot {
+          width: 0.5rem;
+          height: 0.5rem;
+          background: #22c55e;
+          border-radius: 50%;
+        }
+
+        .clicks-text {
+          font-size: 0.875rem;
+          color: #6b7280;
+        }
+
+        .clicks-count {
+          font-weight: 600;
+          color: #111827;
+        }
+
+        .hidden {
+          display: none;
+        }
+
+        .error-message {
+          margin-top: 1rem;
+          padding: 0.75rem 1rem;
+          border: 1px solid #fecaca;
+          background: #fef2f2;
+          color: #b91c1c;
+          border-radius: 0.5rem;
+          font-size: 0.875rem;
+        }
+
+        .analytics-box{
+          margin-top: 12px;
+          padding-top: 12px;
+          border-top: 1px solid #e5e7eb;
+        }
+
+        .analytics-title{
+          font-size: 14px;
+          font-weight: 600;
+          color: #374151;
+          margin-bottom: 8px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="card">
+        <!-- Header -->
+        <div class="header">
+            <div class="icon-wrapper">
+                <svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                </svg>
+            </div>
+            <h1>URL Shortener</h1>
+            <p class="subtitle">Shorten your long URLs instantly</p>
+        </div>
+
+        <!-- Input Section -->
+        <div class="input-section">
+            <input
+                    type="url"
+                    id="urlInput"
+                    class="url-input"
+                    placeholder="Enter your long URL here..."
+            />
+            <input
+                    type="text"
+                    id="customCode"
+                    class="url-input"
+                    placeholder="Custom short code (optional)"
+            />
+            <input
+                    type="number"
+                    id="expireDays"
+                    class="url-input"
+                    placeholder="Expire after days (optional)"
+            />
+            <button id="shortenBtn" class="shorten-btn" disabled>
+                Shorten URL
+            </button>
+            <div id="errorMessage" class="error-message hidden"></div>
+        </div>
+
+        <!-- Results Section -->
+        <div id="resultsSection" class="results-section hidden">
+            <h2 class="results-title">Your shortened URLs</h2>
+            <div id="urlsList"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    const urlInput = document.getElementById('urlInput');
+    const shortenBtn = document.getElementById('shortenBtn');
+    const resultsSection = document.getElementById('resultsSection');
+    const urlsList = document.getElementById('urlsList');
+    const errorMessage = document.getElementById('errorMessage');
+
+    let shortenedUrls = [];
+    let copiedIndex = null;
+
+
+    // enable button
+    urlInput.addEventListener('input', () => {
+      shortenBtn.disabled = !urlInput.value.trim();
+    });
+
+
+    // enter key
+    urlInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && urlInput.value.trim()) {
+        handleShorten();
+      }
+    });
+
+
+    // call backend API
+async function handleShorten(){
+
+  const originalUrl = urlInput.value.trim();
+  const custom = document.getElementById("customCode").value.trim();
+  const expireDays = document.getElementById("expireDays").value.trim();
+
+  if(!originalUrl) return;
+
+  let api = `/shorten?url=${encodeURIComponent(originalUrl)}`;
+
+  if(custom){
+      api += `&custom=${custom}`;
+  }
+
+  if(expireDays){
+      api += `&expireDays=${expireDays}`;
+  }
+
+  const response = await fetch(api,{
+      method:"POST"
+  });
+
+  const shortUrl = await response.text();
+    const code = shortUrl.split("/").pop();
+
+    const analyticsRes = await fetch(`/analytics/${code}`);
+    let clicks = 0;
+    let expiry = "No expiry";
+
+    if (analyticsRes.ok) {
+        const data = await analyticsRes.json();
+        clicks = data.clickCount;
+<!--        expiry = data.expiresAt ? data.expiresAt : "No expiry";-->
+        expiry = data.expiresAt ? data.expiresAt.split("T")[0] : "No expiry";
+    }
+
+    const newUrl = {
+      original: originalUrl,
+      shortUrl: shortUrl,
+      shortCode: code,
+      clicks: clicks,
+      expiry: expiry
+    };
+
+  shortenedUrls.unshift(newUrl);
+
+  renderUrls();
+}
+
+    async function refreshClicks(index, code) {
+        setTimeout(async () => {
+            try {
+                const res = await fetch(`/analytics/${code}`);
+                if (res.ok) {
+                    const data = await res.json();
+                    shortenedUrls[index].clicks = data.clickCount;
+                    renderUrls();
+                }
+            } catch (e) {
+                console.error("Failed to refresh click count", e);
+            }
+        }, 1000);
+    }
+
+    function showError(message){
+      errorMessage.textContent = message;
+      errorMessage.classList.remove("hidden");
+    }
+
+    function hideError(){
+      errorMessage.textContent = "";
+      errorMessage.classList.add("hidden");
+    }
+
+
+    // copy short url
+    function handleCopy(shortUrl,index){
+
+      navigator.clipboard.writeText(shortUrl);
+
+      copiedIndex = index;
+
+      renderUrls();
+
+      setTimeout(()=>{
+        copiedIndex = null;
+        renderUrls();
+      },2000);
+
+    }
+
+
+    // render cards
+function renderUrls(){
+
+  if(shortenedUrls.length === 0){
+    resultsSection.classList.add("hidden");
+    return;
+  }
+
+  resultsSection.classList.remove("hidden");
+
+  urlsList.innerHTML = shortenedUrls.map((url,index)=>{
+
+    const isCopied = copiedIndex === index;
+
+    return `
+    <div class="url-card">
+
+        <div class="url-section">
+            <p class="url-label">Original URL</p>
+            <p class="url-text">${url.original}</p>
+        </div>
+
+        <div class="short-url-section">
+
+            <div class="short-url-wrapper">
+                <p class="url-label">Short URL</p>
+                <a href="${url.shortUrl}" target="_blank" class="short-url-link"
+                   onclick="refreshClicks(${index}, '${url.shortCode}')">
+                    ${url.shortUrl}
+                </a>
+            </div>
+
+            <button class="copy-btn ${isCopied ? 'copied' : ''}"
+                onclick="handleCopy('${url.shortUrl}',${index})">
+                ${isCopied ? "Copied!" : "Copy"}
+            </button>
+
+            <button class="copy-btn"
+                onclick="toggleAnalytics('${url.shortCode}')">
+                Analytics
+            </button>
+        </div>
+
+        <div class="clicks-section">
+            <span class="clicks-text">
+                Clicks: ${url.clicks}
+            </span>
+        </div>
+
+        <div class="clicks-section">
+            <span class="clicks-text">
+                Expiry: ${url.expiry}
+            </span>
+        </div>
+
+        <div id="analytics-${url.shortCode}" class="hidden"></div>
+
+        <div id="analytics-${url.shortCode}" class="hidden">
+            <div class="url-section">
+                <p class="url-label">Created</p>
+                <p class="url-text">${url.created || ""}</p>
+            </div>
+
+            <div class="url-section">
+                <p class="url-label">Total Clicks</p>
+                <p class="url-text">${url.clicks}</p>
+            </div>
+        </div>
+
+    </div>
+    `;
+  }).join("");
+}
+
+async function toggleAnalytics(code){
+
+    const container = document.getElementById(`analytics-${code}`);
+
+    if(!container.classList.contains("hidden")){
+        container.classList.add("hidden");
+        return;
+    }
+
+    const res = await fetch(`/analytics/${code}`);
+
+    if(!res.ok){
+        return;
+    }
+
+    const data = await res.json();
+
+    const created = data.createdAt.split("T")[0];
+    const expiry = data.expiresAt ? data.expiresAt.split("T")[0] : "No expiry";
+
+
+        container.innerHTML = `
+    <div class="analytics-box">
+
+        <h4 class="analytics-title">Analytics</h4>
+
+        <div class="url-section">
+            <p class="url-label">Created</p>
+            <p class="url-text">${created}</p>
+        </div>
+
+        <div class="url-section">
+            <p class="url-label">Total Clicks</p>
+            <p class="url-text">${data.clickCount}</p>
+        </div>
+
+        <div class="url-section">
+            <p class="url-label">Expiry</p>
+            <p class="url-text">${expiry}</p>
+        </div>
+
+    </div>
+`;
+
+    container.classList.remove("hidden");
+    }
+    shortenBtn.addEventListener("click",handleShorten);
+
+</script>
+</body>
+</html>
