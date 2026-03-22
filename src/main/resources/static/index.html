@@ -332,7 +332,8 @@ async function handleShorten(){
 
   if(!originalUrl) return;
 
-  let api = `/shorten?url=${encodeURIComponent(originalUrl)}`;
+  const BASE_URL = "https://urlshortner-4zwg.onrender.com";
+  let api = `${BASE_URL}/shorten?url=${encodeURIComponent(originalUrl)}`;
 
   if(custom){
       api += `&custom=${custom}`;
@@ -349,7 +350,7 @@ async function handleShorten(){
   const shortUrl = await response.text();
     const code = shortUrl.split("/").pop();
 
-    const analyticsRes = await fetch(`/analytics/${code}`);
+    const analyticsRes = await fetch(`${BASE_URL}/analytics/${code}`);
     let clicks = 0;
     let expiry = "No expiry";
 
